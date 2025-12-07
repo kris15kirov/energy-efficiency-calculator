@@ -1,0 +1,320 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Firebase Configuration (PLACEHOLDERS - Replace with actual keys)
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Material Database
+const materials = [
+    { id: 'concrete', name_en: 'Concrete', name_bg: 'Бетон', lambda: 1.65 },
+    { id: 'brick', name_en: 'Brick wall', name_bg: 'Тухлена стена', lambda: 0.79 },
+    { id: 'bitumen', name_en: 'Bitumen insulation', name_bg: 'Битумна изолация', lambda: 0.27 },
+    { id: 'wood', name_en: 'Wood', name_bg: 'Дърво', lambda: 0.13 },
+    { id: 'glass_wool', name_en: 'Glass wool', name_bg: 'Стъклена вата', lambda: 0.04 }
+];
+
+// Translations
+const translations = {
+    en: {
+        brand_name: 'EcoCalc',
+        lang_toggle: 'EN / BG',
+        hero_title_1: 'Advanced',
+        hero_title_2: 'Energy Analysis',
+        hero_title_3: 'for Modern Buildings',
+        hero_subtitle: 'Calculate heat loss, evaluate insulation efficiency, and optimize your building\'s energy performance with precision engineering tools.',
+        start_calculating: 'Start Calculating',
+        learn_more: 'Learn More',
+        calculator_title: 'Energy Efficiency Calculator',
+        calculator_subtitle: 'Enter your building parameters below',
+        area_label: 'Area (m²)',
+        select_material_placeholder: 'Choose material...',
+        material_label: 'Material',
+        thickness_label: 'Thickness (cm)',
+        temp_in_label: 'Internal (°C)',
+        temp_out_label: 'External (°C)',
+        calculate_btn: 'Calculate Heat Loss',
+        result_heading: 'Result',
+        heat_loss_label: 'Heat Loss:',
+        watts_unit: 'Watts',
+        fill_all_fields: 'Please fill in all fields correctly.',
+        thickness_warning: 'Thickness cannot be negative',
+        conductivity_tooltip: 'The ability of a material to transfer heat. Lower values = better insulation.',
+        heat_loss_tooltip: 'The amount of energy escaping through the wall in Watts.',
+        efficiency_rating: 'Energy Efficiency Rating',
+        rating_good: 'Good',
+        rating_poor: 'Poor',
+        partner_text: 'Developed in partnership with',
+        partner_link: 'Bulgarian Academy of Sciences',
+        footer_heading: 'Team',
+        footer_student: 'Student: Kristiyan Kirov',
+        footer_mentor: 'Mentor: Dr. Veneta Yosifova',
+        footer_institute: 'Institute: IICT - BAS',
+        footer_description: 'Advanced energy efficiency calculations for sustainable building design.',
+        footer_connect: 'Contacts',
+        footer_location: 'BAS IV km., ul. "Akad. Georgi Bonchev" 2, Block 2, 1113 Sofia',
+        footer_copyright: '© 2025 Energy Efficiency Project | Bulgarian Academy of Sciences'
+    },
+    bg: {
+        brand_name: 'ЕкоКалк',
+        lang_toggle: 'EN / BG',
+        hero_title_1: 'Модерен',
+        hero_title_2: 'Енергиен Анализ',
+        hero_title_3: 'за Съвременни Сгради',
+        hero_subtitle: 'Изчислете топлинните загуби, оценете ефективността на изолацията и оптимизирайте енергийната ефективност на вашата сграда с прецизни инженерни инструменти.',
+        start_calculating: 'Започни Изчисление',
+        learn_more: 'Научи Повече',
+        calculator_title: 'Калкулатор за Енергийна Ефективност',
+        calculator_subtitle: 'Въведете параметрите на сградата по-долу',
+        area_label: 'Площ (m²)',
+        select_material_placeholder: 'Изберете материал...',
+        material_label: 'Материал',
+        thickness_label: 'Дебелина (cm)',
+        temp_in_label: 'Вътрешна (°C)',
+        temp_out_label: 'Външна (°C)',
+        calculate_btn: 'Изчисли Топлинни Загуби',
+        result_heading: 'Резултат',
+        heat_loss_label: 'Топлинни загуби:',
+        watts_unit: 'Вата',
+        fill_all_fields: 'Моля, попълнете всички полета правилно.',
+        thickness_warning: 'Дебелината не може да бъде отрицателна',
+        conductivity_tooltip: 'Способността на материала да пренася топлина. По-ниски стойности = по-добра изолация.',
+        heat_loss_tooltip: 'Количеството енергия, излизащо през стената във Ватове.',
+        efficiency_rating: 'Рейтинг на Енергийна Ефективност',
+        rating_good: 'Добър',
+        rating_poor: 'Лош',
+        partner_text: 'Разработено в партньорство с',
+        partner_link: 'Българска Академия на Науките',
+        footer_heading: 'Екип',
+        footer_student: 'Студент: Кристиян Киров',
+        footer_mentor: 'Ментор: д-р Венета Йосифова',
+        footer_institute: 'Институт: ИИКТ - БАН',
+        footer_description: 'Модерни изчисления за енергийна ефективност за устойчив дизайн на сгради.',
+        footer_connect: 'Контакти',
+        footer_location: 'БАН IV км., ул. "Акад. Георги Бончев" 2, Блок 2, 1113 София',
+        footer_copyright: '© 2025 Проект Енергийна Ефективност | Българска Академия на Науките'
+    }
+};
+
+let currentLang = 'bg'; // Default to Bulgarian
+
+// DOM Elements
+const materialSelect = document.getElementById('inputMaterial');
+const langToggleBtn = document.getElementById('langToggle');
+const calcForm = document.getElementById('calcForm');
+const resultAlert = document.getElementById('resultAlert');
+const resultValue = document.getElementById('resultValue');
+const btnBackToTop = document.getElementById('btn-back-to-top');
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    updateLanguage(currentLang);
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log('Service Worker registered', reg))
+            .catch(err => console.log('Service Worker registration failed', err));
+    }
+
+    // Set Default Values
+    document.getElementById('inputArea').value = 20;
+    document.getElementById('inputMaterial').value = 'brick';
+    document.getElementById('inputThickness').value = 25;
+    document.getElementById('inputTempIn').value = 22;
+    document.getElementById('inputTempOut').value = 0;
+
+    // Trigger Calculation
+    calculateHeatLoss();
+
+    // Initialize Tooltips
+    updateTooltips();
+});
+
+// Event Listeners
+langToggleBtn.addEventListener('click', () => {
+    currentLang = currentLang === 'en' ? 'bg' : 'en';
+    updateLanguage(currentLang);
+});
+
+calcForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    calculateHeatLoss();
+});
+
+// Scroll to Top Logic
+window.onscroll = function () {
+    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        btnBackToTop.style.display = "block";
+    } else {
+        btnBackToTop.style.display = "none";
+    }
+};
+
+btnBackToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+// Input Validation
+const inputs = document.querySelectorAll('input[type="number"]');
+inputs.forEach(input => {
+    input.addEventListener('input', (e) => {
+        // Prevent non-numeric input (already handled by type="number" but good to reinforce)
+        // Check for negative thickness
+        if (e.target.id === 'inputThickness') {
+            const val = parseFloat(e.target.value);
+            const warning = document.getElementById('thicknessWarning');
+            if (val < 0) {
+                e.target.value = 0;
+                warning.classList.remove('d-none');
+            } else {
+                warning.classList.add('d-none');
+            }
+        }
+    });
+});
+
+// Functions
+function updateLanguage(lang) {
+    // Update text content for elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            element.textContent = translations[lang][key];
+        }
+    });
+
+    // Re-populate materials to update names
+    populateMaterials();
+
+    // Update tooltips
+    updateTooltips();
+}
+
+function updateTooltips() {
+    const materialTooltip = document.getElementById('materialTooltip');
+    const heatLossTooltip = document.getElementById('heatLossTooltip');
+
+    // Dispose existing tooltips to update title
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        const tooltip = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+        if (tooltip) {
+            tooltip.dispose();
+        }
+    });
+
+    // Set new titles
+    materialTooltip.setAttribute('title', translations[currentLang].conductivity_tooltip);
+    heatLossTooltip.setAttribute('title', translations[currentLang].heat_loss_tooltip);
+
+    // Re-initialize tooltips
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+}
+
+function populateMaterials() {
+    // Save currently selected value
+    const selectedValue = materialSelect.value;
+
+    // Clear existing options except the first one (placeholder)
+    while (materialSelect.options.length > 1) {
+        materialSelect.remove(1);
+    }
+
+    // Update placeholder text
+    const placeholderOption = materialSelect.options[0];
+    placeholderOption.textContent = translations[currentLang].select_material_placeholder;
+
+    materials.forEach(material => {
+        const option = document.createElement('option');
+        option.value = material.id;
+        option.textContent = currentLang === 'en' ? material.name_en : material.name_bg;
+        materialSelect.appendChild(option);
+    });
+
+    // Restore selected value if it exists
+    if (selectedValue) {
+        materialSelect.value = selectedValue;
+    }
+}
+
+function calculateHeatLoss() {
+    const area = parseFloat(document.getElementById('inputArea').value);
+    const materialId = document.getElementById('inputMaterial').value;
+    const thicknessCm = parseFloat(document.getElementById('inputThickness').value);
+    const tempIn = parseFloat(document.getElementById('inputTempIn').value);
+    const tempOut = parseFloat(document.getElementById('inputTempOut').value);
+
+    // Validation
+    if (isNaN(area) || !materialId || isNaN(thicknessCm) || isNaN(tempIn) || isNaN(tempOut)) {
+        alert(translations[currentLang].fill_all_fields);
+        return;
+    }
+
+    // Find material lambda
+    const material = materials.find(m => m.id === materialId);
+    if (!material) return;
+
+    // Formulas
+    const thicknessM = thicknessCm / 100; // Convert cm to m
+    const R = thicknessM / material.lambda; // Resistance
+    const U = 1 / R; // Transmittance
+    const deltaT = Math.abs(tempIn - tempOut); // Temperature Difference
+    const heatLoss = U * area * deltaT; // Heat Loss
+
+    // Output
+    resultValue.textContent = heatLoss.toFixed(2);
+    resultAlert.classList.remove('d-none');
+
+    // Update Efficiency Bar
+    updateEfficiencyBar(heatLoss);
+
+    // Save to Cloud
+    saveCalculation({
+        material: material.name_en, // Saving English name for consistency
+        loss: parseFloat(heatLoss.toFixed(2)),
+        date: new Date()
+    });
+}
+
+async function saveCalculation(data) {
+    try {
+        await addDoc(collection(db, "history"), data);
+
+        // Show Toast
+        const toastEl = document.getElementById('saveToast');
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    } catch (e) {
+        console.error("Error adding document: ", e);
+    }
+}
+
+function updateEfficiencyBar(heatLoss) {
+    const indicator = document.getElementById('efficiencyIndicator');
+    let percentage = 0;
+
+    // Logic: < 50W = 0% (Green), > 200W = 100% (Red)
+    if (heatLoss <= 50) {
+        percentage = 0;
+    } else if (heatLoss >= 200) {
+        percentage = 100;
+    } else {
+        // Interpolate between 50 and 200
+        percentage = ((heatLoss - 50) / (200 - 50)) * 100;
+    }
+
+    indicator.style.left = `${percentage}%`;
+}
