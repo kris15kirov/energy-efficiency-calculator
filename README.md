@@ -1,23 +1,46 @@
 # 🏢 EcoCalc - Building Energy Efficiency Calculator
 
-A modern web application for calculating building heat loss and evaluating energy efficiency. Built with Node.js and vanilla JavaScript, featuring a sleek dark green theme inspired by professional design standards.
+A modern web application for calculating building heat loss and evaluating energy efficiency. Built with Node.js and vanilla JavaScript, featuring a sleek dark green theme with optional light mode.
 
-![EcoCalc Preview](https://img.shields.io/badge/Status-Active-brightgreen) ![License](https://img.shields.io/badge/License-MIT-blue)
+![EcoCalc Preview](https://img.shields.io/badge/Status-Active-brightgreen) ![License](https://img.shields.io/badge/License-MIT-blue) ![Language](https://img.shields.io/badge/Languages-EN%20%7C%20BG-orange)
 
 ## 🌟 Features
 
-- **Heat Loss Calculation** - Calculate heat loss through building walls based on material, thickness, and temperature differential
-- **Material Database** - Pre-loaded materials with thermal conductivity values (Concrete, Brick, Bitumen, Wood, Glass Wool)
-- **Energy Efficiency Rating** - Visual indicator showing efficiency from Good to Poor
-- **Bilingual Support** - Full English and Bulgarian language toggle
-- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
-- **PWA Ready** - Progressive Web App support with service worker
+### Core Functionality
+- **Heat Loss Calculation** - Calculate heat loss through building walls in kilowatts (kW)
+- **Material Database** - Pre-loaded materials with thermal conductivity values and thickness limits
+- **Energy Efficiency Rating** - Visual gradient indicator from Good (green) to Poor (red)
+- **Real-time Validation** - Input validation with translated warning messages
+
+### User Experience
+- **Bilingual Support** - Full English and Bulgarian language toggle (persisted in localStorage)
+- **Theme Toggle** - Switch between dark green and light white themes (persisted in localStorage)
+- **Responsive Design** - Two-column layout for desktop, stacked for mobile
+- **PWA Ready** - Progressive Web App support for offline use
+
+### Input Validation
+| Parameter | Range | Notes |
+|-----------|-------|-------|
+| Internal Temperature | 10°C – 30°C | Comfort zone standards |
+| External Temperature | -30°C – +50°C | Bulgarian climate extremes |
+| Thickness | Material-specific max | See table below |
+| Decimal Places | Max 2 digits | e.g., 15.25 or 15,25 |
+
+### Materials & Limits
+
+| Material | λ (W/m·K) | Max Thickness |
+|----------|-----------|---------------|
+| Concrete | 1.65 | 40 cm |
+| Brick | 0.79 | 40 cm |
+| Bitumen Insulation | 0.27 | 2 cm |
+| Wood | 0.13 | 15 cm |
+| Glass Wool | 0.04 | 15 cm |
 
 ## 🛠️ Technology Stack
 
 - **Frontend**: HTML5, CSS3 (Vanilla), JavaScript (ES6+)
 - **Backend**: Node.js, Express.js
-- **Styling**: Custom CSS with glassmorphism effects
+- **Styling**: Custom CSS with CSS variables for theming
 - **Icons**: Bootstrap Icons
 - **Database**: Firebase Firestore (optional cloud sync)
 
@@ -47,48 +70,35 @@ A modern web application for calculating building heat loss and evaluating energ
    ```
 
 4. **Open in browser**
-   - **Laptop**: http://localhost:3000
-   - **Phone/Tablet** (same WiFi network): http://YOUR_LOCAL_IP:3000
-
-## 📱 Accessing from Phone/Tablet (Demo Review)
-
-To test on your mobile device while the server is running on your laptop:
-
-1. Make sure your phone and laptop are on the **same WiFi network**
-2. Find your laptop's local IP address:
-   - **Mac**: Run `ipconfig getifaddr en0` in Terminal
-   - **Windows**: Run `ipconfig` in Command Prompt, look for IPv4 Address
-3. Open your phone's browser and navigate to: `http://[YOUR_IP]:3000`
-
-**Example**: If your IP is `192.168.100.165`, open `http://192.168.100.165:3000` on your phone.
+   - **Local**: http://localhost:3000
+   - **Network** (same WiFi): http://YOUR_LOCAL_IP:3000
 
 ## 📐 How It Works
 
-The calculator uses the following heat transfer formula:
+The calculator uses the heat transfer formula:
 
 ```
 Q = U × A × ΔT
 ```
 
 Where:
-- **Q** = Heat Loss (Watts)
+- **Q** = Heat Loss (kW)
 - **U** = Thermal Transmittance (1/R, where R = thickness/λ)
 - **A** = Surface Area (m²)
 - **ΔT** = Temperature Difference (°C)
 
-### Material Thermal Conductivity (λ)
+## 🎨 Themes
 
-| Material | λ (W/m·K) |
-|----------|-----------|
-| Concrete | 1.65 |
-| Brick | 0.79 |
-| Bitumen Insulation | 0.27 |
-| Wood | 0.13 |
-| Glass Wool | 0.04 |
+| Theme | Description |
+|-------|-------------|
+| 🌙 **Dark (Default)** | Dark green background, light text |
+| ☀️ **Light** | White background, dark text |
+
+Toggle themes using the sun/moon button in the navigation bar.
 
 ## 🏛️ Project Information
 
-This project was developed as part of a research initiative at the Bulgarian Academy of Sciences (BAS).
+Developed as part of a research initiative at the Bulgarian Academy of Sciences (BAS).
 
 | Role | Name |
 |------|------|
@@ -103,19 +113,15 @@ This project was developed as part of a research initiative at the Bulgarian Aca
 ```
 energy-efficiency-calculator/
 ├── public/
-│   ├── index.html      # Main HTML file
-│   ├── styles.css      # Custom styling (dark green theme)
-│   ├── script.js       # Application logic & translations
-│   ├── manifest.json   # PWA manifest
-│   └── service-worker.js
-├── server.js           # Express server
-├── package.json        # Dependencies
+│   ├── index.html        # Main HTML (two-column layout)
+│   ├── styles.css        # Theming & responsive styles
+│   ├── script.js         # Logic, translations & validation
+│   ├── manifest.json     # PWA manifest
+│   └── service-worker.js # Offline support
+├── server.js             # Express server
+├── package.json          # Dependencies
 └── README.md
 ```
-
-## 🌐 Language Support
-
-Toggle between English and Bulgarian using the **EN / BG** button in the navigation bar. All UI elements, labels, and tooltips are fully translated.
 
 ## 📄 License
 
