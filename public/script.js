@@ -57,7 +57,7 @@ const translations = {
         temp_out_min_warning: 'External temperature cannot be lower than -30°C',
         temp_out_max_warning: 'External temperature cannot be higher than 50°C',
         conductivity_tooltip: 'The ability of a material to transfer heat. Lower values = better insulation.',
-        heat_loss_tooltip: 'The amount of energy escaping through the wall in Watts.',
+        heat_loss_tooltip: 'The amount of energy escaping through the wall in kilowatts (kW).',
         efficiency_rating: 'Energy Efficiency Rating',
         rating_good: 'Good',
         rating_poor: 'Poor',
@@ -103,7 +103,7 @@ const translations = {
         temp_out_min_warning: 'Външната температура не може да е по-ниска от -30°C',
         temp_out_max_warning: 'Външната температура не може да е по-висока от 50°C',
         conductivity_tooltip: 'Способността на материала да пренася топлина. По-ниски стойности = по-добра изолация.',
-        heat_loss_tooltip: 'Количеството енергия, излизащо през стената във Ватове.',
+        heat_loss_tooltip: 'Количеството енергия, излизащо през стената в киловати (kW).',
         efficiency_rating: 'Рейтинг на Енергийна Ефективност',
         rating_good: 'Добър',
         rating_poor: 'Лош',
@@ -126,14 +126,31 @@ let currentLang = localStorage.getItem('selectedLang') || 'bg';
 // DOM Elements
 const materialSelect = document.getElementById('inputMaterial');
 const langToggleBtn = document.getElementById('langToggle');
+const themeToggleBtn = document.getElementById('themeToggle');
 const calcForm = document.getElementById('calcForm');
 const resultAlert = document.getElementById('resultAlert');
 const resultValue = document.getElementById('resultValue');
 const btnBackToTop = document.getElementById('btn-back-to-top');
 
+// Theme: default is dark (green), load from localStorage
+let currentTheme = localStorage.getItem('calculatorTheme') || 'dark';
+
+function applyTheme(theme) {
+    if (theme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggleBtn.innerHTML = '<i class="bi bi-moon-fill"></i>';
+    } else {
+        document.body.classList.remove('light-theme');
+        themeToggleBtn.innerHTML = '<i class="bi bi-sun-fill"></i>';
+    }
+    localStorage.setItem('calculatorTheme', theme);
+    currentTheme = theme;
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     updateLanguage(currentLang);
+    applyTheme(currentTheme);
 
     // Register Service Worker
     if ('serviceWorker' in navigator) {
@@ -154,6 +171,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Tooltips
     updateTooltips();
+});
+
+// Theme Toggle Event
+themeToggleBtn.addEventListener('click', () => {
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
 });
 
 // Event Listeners
