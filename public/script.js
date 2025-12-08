@@ -15,13 +15,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Material Database
+// Material Database with calibrated max thickness values
 const materials = [
-    { id: 'concrete', name_en: 'Concrete', name_bg: 'Бетон', lambda: 1.65 },
-    { id: 'brick', name_en: 'Brick wall', name_bg: 'Тухлена стена', lambda: 0.79 },
-    { id: 'bitumen', name_en: 'Bitumen insulation', name_bg: 'Битумна изолация', lambda: 0.27 },
-    { id: 'wood', name_en: 'Wood', name_bg: 'Дърво', lambda: 0.13 },
-    { id: 'glass_wool', name_en: 'Glass wool', name_bg: 'Стъклена вата', lambda: 0.04 }
+    { id: 'concrete', name_en: 'Concrete', name_bg: 'Бетон', lambda: 1.65, maxThickness: 40 },
+    { id: 'brick', name_en: 'Brick wall', name_bg: 'Тухлена стена', lambda: 0.79, maxThickness: 40 },
+    { id: 'bitumen', name_en: 'Bitumen insulation', name_bg: 'Битумна изолация', lambda: 0.27, maxThickness: 2 },
+    { id: 'wood', name_en: 'Wood', name_bg: 'Дърво', lambda: 0.13, maxThickness: 15 },
+    { id: 'glass_wool', name_en: 'Glass wool', name_bg: 'Стъклена вата', lambda: 0.04, maxThickness: 15 }
 ];
 
 // Translations
@@ -46,9 +46,12 @@ const translations = {
         calculate_btn: 'Calculate Heat Loss',
         result_heading: 'Result',
         heat_loss_label: 'Heat Loss:',
-        watts_unit: 'Watts',
+        watts_unit: 'kW',
         fill_all_fields: 'Please fill in all fields correctly.',
+        thickness_max_warning: 'Maximum thickness for this material is {max} cm',
+        thickness_exceeded_note: 'Value has been adjusted to the maximum.',
         thickness_warning: 'Thickness cannot be negative',
+        decimal_places_warning: 'Maximum 2 digits after the decimal point allowed',
         conductivity_tooltip: 'The ability of a material to transfer heat. Lower values = better insulation.',
         heat_loss_tooltip: 'The amount of energy escaping through the wall in Watts.',
         efficiency_rating: 'Energy Efficiency Rating',
@@ -85,9 +88,12 @@ const translations = {
         calculate_btn: 'Изчисли Топлинни Загуби',
         result_heading: 'Резултат',
         heat_loss_label: 'Топлинни загуби:',
-        watts_unit: 'Вата',
+        watts_unit: 'kW',
         fill_all_fields: 'Моля, попълнете всички полета правилно.',
+        thickness_max_warning: 'Максимална дебелина за избрания материал: {max} cm',
+        thickness_exceeded_note: 'Стойността е коригирана до максимума.',
         thickness_warning: 'Дебелината не може да бъде отрицателна',
+        decimal_places_warning: 'Максимум 2 цифри след десетичната запетая',
         conductivity_tooltip: 'Способността на материала да пренася топлина. По-ниски стойности = по-добра изолация.',
         heat_loss_tooltip: 'Количеството енергия, излизащо през стената във Ватове.',
         efficiency_rating: 'Рейтинг на Енергийна Ефективност',
@@ -106,7 +112,8 @@ const translations = {
     }
 };
 
-let currentLang = 'bg'; // Default to Bulgarian
+// Load saved language from localStorage, default to Bulgarian
+let currentLang = localStorage.getItem('selectedLang') || 'bg';
 
 // DOM Elements
 const materialSelect = document.getElementById('inputMaterial');
@@ -144,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Event Listeners
 langToggleBtn.addEventListener('click', () => {
     currentLang = currentLang === 'en' ? 'bg' : 'en';
+    localStorage.setItem('selectedLang', currentLang);
     updateLanguage(currentLang);
 });
 
@@ -253,7 +261,9 @@ function populateMaterials() {
 function calculateHeatLoss() {
     const area = parseFloat(document.getElementById('inputArea').value);
     const materialId = document.getElementById('inputMaterial').value;
-    const thicknessCm = parseFloat(document.getElementById('inputThickness').value);
+    // Support both dot and comma as decimal separator
+    const thicknessInput = document.getElementById('inputThickness').value.replace(',', '.');
+    const thicknessCm = parseFloat(thicknessInput);
     const tempIn = parseFloat(document.getElementById('inputTempIn').value);
     const tempOut = parseFloat(document.getElementById('inputTempOut').value);
 
@@ -267,24 +277,52 @@ function calculateHeatLoss() {
     const material = materials.find(m => m.id === materialId);
     if (!material) return;
 
+    // Validate thickness against material-specific max
+    const warning = document.getElementById('thicknessWarning');
+
+    // Check for more than 2 decimal places
+    const decimalMatch = thicknessInput.match(/[.,](\d+)/);
+    if (decimalMatch && decimalMatch[1].length > 2) {
+        warning.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${translations[currentLang].decimal_places_warning}`;
+        warning.classList.remove('d-none');
+        return; // Block calculation until user fixes the input
+    }
+
+    // Round to 2 decimal places
+    const thicknessRounded = Math.round(thicknessCm * 100) / 100;
+    let usedThickness = thicknessRounded;
+
+    if (thicknessRounded > material.maxThickness) {
+        const warningMsg = translations[currentLang].thickness_max_warning.replace('{max}', material.maxThickness);
+        warning.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${warningMsg}`;
+        warning.classList.remove('d-none');
+        return; // Block calculation until user adjusts the value
+    } else if (thicknessRounded <= 0) {
+        warning.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${translations[currentLang].thickness_warning}`;
+        warning.classList.remove('d-none');
+        return;
+    } else {
+        warning.classList.add('d-none');
+    }
+
     // Formulas
-    const thicknessM = thicknessCm / 100; // Convert cm to m
+    const thicknessM = usedThickness / 100; // Convert cm to m
     const R = thicknessM / material.lambda; // Resistance
     const U = 1 / R; // Transmittance
     const deltaT = Math.abs(tempIn - tempOut); // Temperature Difference
-    const heatLoss = U * area * deltaT; // Heat Loss
+    const heatLossWatts = U * area * deltaT; // Heat Loss in Watts
+    const heatLossKW = heatLossWatts / 1000; // Convert to kilowatts
 
-    // Output
-    resultValue.textContent = heatLoss.toFixed(2);
-    resultAlert.classList.remove('d-none');
+    // Output in kW
+    resultValue.textContent = heatLossKW.toFixed(3);
 
-    // Update Efficiency Bar
-    updateEfficiencyBar(heatLoss);
+    // Update Efficiency Bar (using kW values)
+    updateEfficiencyBar(heatLossKW);
 
     // Save to Cloud
     saveCalculation({
         material: material.name_en, // Saving English name for consistency
-        loss: parseFloat(heatLoss.toFixed(2)),
+        loss: parseFloat(heatLossKW.toFixed(3)),
         date: new Date()
     });
 }
@@ -302,18 +340,18 @@ async function saveCalculation(data) {
     }
 }
 
-function updateEfficiencyBar(heatLoss) {
+function updateEfficiencyBar(heatLossKW) {
     const indicator = document.getElementById('efficiencyIndicator');
     let percentage = 0;
 
-    // Logic: < 50W = 0% (Green), > 200W = 100% (Red)
-    if (heatLoss <= 50) {
+    // Logic: < 0.05 kW (50W) = 0% (Green), > 0.2 kW (200W) = 100% (Red)
+    if (heatLossKW <= 0.05) {
         percentage = 0;
-    } else if (heatLoss >= 200) {
+    } else if (heatLossKW >= 0.2) {
         percentage = 100;
     } else {
-        // Interpolate between 50 and 200
-        percentage = ((heatLoss - 50) / (200 - 50)) * 100;
+        // Interpolate between 0.05 and 0.2 kW
+        percentage = ((heatLossKW - 0.05) / (0.2 - 0.05)) * 100;
     }
 
     indicator.style.left = `${percentage}%`;

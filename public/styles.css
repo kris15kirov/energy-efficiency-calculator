@@ -814,6 +814,56 @@ body::before {
 }
 
 /* ==========================================
+   Two-Column Calculator Layout
+   ========================================== */
+.calculator-header-section h4 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.calculator-header-section p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.calculator-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.calculator-form-column,
+.calculator-result-column {
+    width: 100%;
+}
+
+.result-card {
+    position: sticky;
+    top: 100px;
+}
+
+.result-card .result-section {
+    margin-top: 0;
+}
+
+/* Mobile: Stack columns */
+@media (max-width: 991px) {
+    .calculator-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .result-card {
+        position: static;
+    }
+}
+
+/* ==========================================
    Utility Classes
    ========================================== */
 .d-none {
@@ -830,4 +880,8 @@ body::before {
 
 .mt-4 {
     margin-top: 1.5rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
 }

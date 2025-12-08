@@ -65,112 +65,126 @@
     <section class="calculator-section" id="calculator">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-6 col-md-8">
-                    <div class="calculator-card">
-                        <div class="card-header-custom">
-                            <h4 data-i18n="calculator_title">Energy Efficiency Calculator</h4>
-                            <p data-i18n="calculator_subtitle">Enter your building parameters below</p>
+                <div class="col-12">
+                    <!-- Calculator Header -->
+                    <div class="calculator-header-section text-center mb-4">
+                        <h4 data-i18n="calculator_title">Energy Efficiency Calculator</h4>
+                        <p data-i18n="calculator_subtitle">Enter your building parameters below</p>
+                    </div>
+
+                    <!-- Two Column Layout for Desktop -->
+                    <div class="calculator-layout">
+                        <!-- Left Column: Form -->
+                        <div class="calculator-form-column">
+                            <div class="calculator-card">
+                                <form id="calcForm">
+                                    <!-- Area Input -->
+                                    <div class="form-group">
+                                        <label class="form-label-custom" for="inputArea">
+                                            <i class="bi bi-aspect-ratio"></i>
+                                            <span data-i18n="area_label">Area (m²)</span>
+                                        </label>
+                                        <input type="number" class="form-control-custom" id="inputArea"
+                                            placeholder="e.g., 50" required>
+                                    </div>
+
+                                    <!-- Material Select -->
+                                    <div class="form-group">
+                                        <label class="form-label-custom" for="inputMaterial">
+                                            <i class="bi bi-bricks"></i>
+                                            <span data-i18n="material_label">Material</span>
+                                            <span class="tooltip-badge" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Select the primary wall material" id="materialTooltip">?</span>
+                                        </label>
+                                        <select class="form-select-custom" id="inputMaterial" required>
+                                            <option value="" selected disabled data-i18n="select_material_placeholder">
+                                                Choose
+                                                material...</option>
+                                            <option value="concrete" data-i18n="material_concrete">Concrete</option>
+                                            <option value="brick" data-i18n="material_brick">Brick</option>
+                                            <option value="wood" data-i18n="material_wood">Wood</option>
+                                            <option value="glass" data-i18n="material_glass">Glass</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Thickness Input -->
+                                    <div class="form-group">
+                                        <label class="form-label-custom" for="inputThickness">
+                                            <i class="bi bi-rulers"></i>
+                                            <span data-i18n="thickness_label">Thickness (cm)</span>
+                                        </label>
+                                        <input type="text" inputmode="decimal" class="form-control-custom"
+                                            id="inputThickness" placeholder="e.g., 15.50" required>
+                                        <div id="thicknessWarning" class="form-warning d-none"
+                                            data-i18n="thickness_warning">
+                                            <i class="bi bi-exclamation-circle"></i> Thickness cannot be negative
+                                        </div>
+                                    </div>
+
+                                    <!-- Temperature Inputs Row -->
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="form-label-custom" for="inputTempIn">
+                                                    <i class="bi bi-thermometer-high"></i>
+                                                    <span data-i18n="temp_in_label">Internal (°C)</span>
+                                                </label>
+                                                <input type="number" class="form-control-custom" id="inputTempIn"
+                                                    placeholder="e.g., 22" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="form-label-custom" for="inputTempOut">
+                                                    <i class="bi bi-thermometer-low"></i>
+                                                    <span data-i18n="temp_out_label">External (°C)</span>
+                                                </label>
+                                                <input type="number" class="form-control-custom" id="inputTempOut"
+                                                    placeholder="e.g., -5" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Calculate Button -->
+                                    <button type="submit" class="btn-calculate" data-i18n="calculate_btn">
+                                        <i class="bi bi-calculator"></i>
+                                        <span>Calculate Heat Loss</span>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
 
-                        <form id="calcForm">
-                            <!-- Area Input -->
-                            <div class="form-group">
-                                <label class="form-label-custom" for="inputArea">
-                                    <i class="bi bi-aspect-ratio"></i>
-                                    <span data-i18n="area_label">Area (m²)</span>
-                                </label>
-                                <input type="number" class="form-control-custom" id="inputArea" placeholder="e.g., 50"
-                                    required>
-                            </div>
-
-                            <!-- Material Select -->
-                            <div class="form-group">
-                                <label class="form-label-custom" for="inputMaterial">
-                                    <i class="bi bi-bricks"></i>
-                                    <span data-i18n="material_label">Material</span>
-                                    <span class="tooltip-badge" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="Select the primary wall material" id="materialTooltip">?</span>
-                                </label>
-                                <select class="form-select-custom" id="inputMaterial" required>
-                                    <option value="" selected disabled data-i18n="select_material_placeholder">Choose
-                                        material...</option>
-                                    <option value="concrete" data-i18n="material_concrete">Concrete</option>
-                                    <option value="brick" data-i18n="material_brick">Brick</option>
-                                    <option value="wood" data-i18n="material_wood">Wood</option>
-                                    <option value="glass" data-i18n="material_glass">Glass</option>
-                                </select>
-                            </div>
-
-                            <!-- Thickness Input -->
-                            <div class="form-group">
-                                <label class="form-label-custom" for="inputThickness">
-                                    <i class="bi bi-rulers"></i>
-                                    <span data-i18n="thickness_label">Thickness (cm)</span>
-                                </label>
-                                <input type="number" class="form-control-custom" id="inputThickness"
-                                    placeholder="e.g., 20" required>
-                                <div id="thicknessWarning" class="form-warning d-none" data-i18n="thickness_warning">
-                                    <i class="bi bi-exclamation-circle"></i> Thickness cannot be negative
-                                </div>
-                            </div>
-
-                            <!-- Temperature Inputs Row -->
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label class="form-label-custom" for="inputTempIn">
-                                            <i class="bi bi-thermometer-high"></i>
-                                            <span data-i18n="temp_in_label">Internal (°C)</span>
-                                        </label>
-                                        <input type="number" class="form-control-custom" id="inputTempIn"
-                                            placeholder="e.g., 22" required>
+                        <!-- Right Column: Result -->
+                        <div class="calculator-result-column">
+                            <div class="calculator-card result-card">
+                                <div class="result-section" id="resultAlert">
+                                    <div class="result-header">
+                                        <i class="bi bi-check-circle-fill"
+                                            style="color: var(--accent-green); font-size: 1.25rem;"></i>
+                                        <h5 data-i18n="result_heading">Result</h5>
+                                        <span class="tooltip-badge" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Heat loss through the wall section" id="heatLossTooltip">?</span>
                                     </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label class="form-label-custom" for="inputTempOut">
-                                            <i class="bi bi-thermometer-low"></i>
-                                            <span data-i18n="temp_out_label">External (°C)</span>
-                                        </label>
-                                        <input type="number" class="form-control-custom" id="inputTempOut"
-                                            placeholder="e.g., -5" required>
+
+                                    <div class="result-value-container">
+                                        <span data-i18n="heat_loss_label">Heat Loss:</span>
+                                        <span class="result-value" id="resultValue">0</span>
+                                        <span class="result-unit" data-i18n="watts_unit">Watts</span>
                                     </div>
-                                </div>
-                            </div>
 
-                            <!-- Calculate Button -->
-                            <button type="submit" class="btn-calculate" data-i18n="calculate_btn">
-                                <i class="bi bi-calculator"></i>
-                                <span>Calculate Heat Loss</span>
-                            </button>
-                        </form>
-
-                        <!-- Result Section -->
-                        <div class="result-section d-none" id="resultAlert">
-                            <div class="result-header">
-                                <i class="bi bi-check-circle-fill"
-                                    style="color: var(--accent-green); font-size: 1.25rem;"></i>
-                                <h5 data-i18n="result_heading">Result</h5>
-                                <span class="tooltip-badge" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Heat loss through the wall section" id="heatLossTooltip">?</span>
-                            </div>
-
-                            <div class="result-value-container">
-                                <span data-i18n="heat_loss_label">Heat Loss:</span>
-                                <span class="result-value" id="resultValue">0</span>
-                                <span class="result-unit" data-i18n="watts_unit">Watts</span>
-                            </div>
-
-                            <div class="efficiency-section">
-                                <div class="efficiency-label" data-i18n="efficiency_rating">Energy Efficiency Rating
-                                </div>
-                                <div class="efficiency-bar-container">
-                                    <div class="efficiency-bar"></div>
-                                    <div id="efficiencyIndicator" class="efficiency-indicator">▼</div>
-                                </div>
-                                <div class="efficiency-labels">
-                                    <span data-i18n="rating_good">Good</span>
-                                    <span data-i18n="rating_poor">Poor</span>
+                                    <div class="efficiency-section">
+                                        <div class="efficiency-label" data-i18n="efficiency_rating">Energy Efficiency
+                                            Rating
+                                        </div>
+                                        <div class="efficiency-bar-container">
+                                            <div class="efficiency-bar"></div>
+                                            <div id="efficiencyIndicator" class="efficiency-indicator">▼</div>
+                                        </div>
+                                        <div class="efficiency-labels">
+                                            <span data-i18n="rating_good">Good</span>
+                                            <span data-i18n="rating_poor">Poor</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
