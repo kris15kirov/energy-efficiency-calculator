@@ -116,6 +116,8 @@ energy-efficiency-calculator/
 │   ├── index.html        # Main HTML (two-column layout)
 │   ├── styles.css        # Theming & responsive styles
 │   ├── script.js         # Logic, translations & validation
+│   ├── logo.png          # Full project logo
+│   ├── logo-icon.png     # Square icon for favicon/PWA
 │   ├── manifest.json     # PWA manifest
 │   └── service-worker.js # Offline support
 ├── server.js             # Express server
