@@ -3,16 +3,16 @@
   "short_name": "EcoCalc",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0d6efd",
+  "background_color": "#18392B",
+  "theme_color": "#18392B",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192",
+      "src": "logo-icon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://via.placeholder.com/512",
+      "src": "logo-icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
