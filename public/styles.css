@@ -125,30 +125,40 @@ body::before {
     width: 60%;
 }
 
-/* Language Toggle Button */
-.btn-lang-toggle {
-    background: transparent;
-    border: 1px solid var(--glass-border);
-    color: var(--text-secondary);
-    padding: 0.5rem 1rem;
-    border-radius: 50px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: var(--transition-smooth);
+/* Language Switcher - Two Box Design */
+.lang-switcher {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-}
-
-.btn-lang-toggle:hover {
     background: var(--glass-bg);
-    border-color: var(--accent-green);
-    color: var(--accent-green);
-    transform: translateY(-1px);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 4px;
+    gap: 2px;
 }
 
-.btn-lang-toggle i {
-    font-size: 1rem;
+.lang-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.4rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    position: relative;
+}
+
+.lang-btn:hover:not(.active) {
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.lang-btn.active {
+    background: var(--accent-green);
+    color: var(--primary-dark);
+    box-shadow: 0 0 12px rgba(45, 212, 191, 0.5), 0 0 24px rgba(45, 212, 191, 0.3);
 }
 
 /* Theme Toggle Button */
@@ -1145,6 +1155,34 @@ body.light-theme .form-select-custom option {
     margin: 0;
 }
 
+.history-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-export-history {
+    background: rgba(45, 212, 191, 0.1);
+    border: 1px solid rgba(45, 212, 191, 0.3);
+    color: var(--accent-green);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-export-history:hover {
+    background: rgba(45, 212, 191, 0.2);
+    border-color: var(--accent-green);
+    transform: translateY(-1px);
+}
+
 .btn-clear-history {
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.3);
@@ -1383,6 +1421,15 @@ body.light-theme .form-select-custom option {
     color: var(--accent-green);
 }
 
+/* Language Switcher on Login Page */
+.login-lang-switcher {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--glass-border);
+}
+
 /* Admin Badge */
 .admin-badge {
     background: var(--accent-gradient);
@@ -1608,6 +1655,119 @@ body.light-theme .form-select-custom option {
     color: var(--text-secondary);
 }
 
+/* Formula Settings */
+.formula-settings {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: var(--glass-bg);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+}
+
+.formula-settings h5,
+.formula-legend-editable h5 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.formula-toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toggle-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.toggle-label span {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.toggle-label small {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    transition: var(--transition-smooth);
+    border-radius: 28px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-muted);
+    transition: var(--transition-smooth);
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background-color: var(--accent-green);
+    border-color: var(--accent-green);
+}
+
+.toggle-switch input:checked+.toggle-slider:before {
+    transform: translateX(24px);
+    background-color: var(--primary-dark);
+}
+
+/* Formula Legend Editable */
+.formula-legend-editable {
+    margin: 1.5rem 0;
+}
+
+.formula-desc-input {
+    flex: 1;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    transition: var(--transition-smooth);
+}
+
+.formula-desc-input:focus {
+    outline: none;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.15);
+}
+
 /* Materials Table */
 .materials-table-container {
     overflow-x: auto;
@@ -1629,7 +1789,6 @@ body.light-theme .form-select-custom option {
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-muted);
-    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
