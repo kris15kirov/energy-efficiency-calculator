@@ -8,10 +8,12 @@ A modern web application for calculating building heat loss and evaluating energ
 
 ### Core Functionality
 - **Heat Loss Calculation** - Calculate heat loss through building walls in kilowatts (kW)
+- **Adjustable Formula** - Toggle between absolute value `|Tin - Tout|` or standard `(Tin - Tout)` calculation
 - **Material Database** - Pre-loaded materials with thermal conductivity values and thickness limits
 - **Normalized Efficiency Rating** - Visual indicator based on heat loss intensity (q = Q / A × ΔT), independent of area and temperature
-- **Real-time Validation** - Input validation with translated warning messages
-- **Calculation History** - Local storage of previous calculations
+- **Real-time Validation** - Instant error messages as you type with translated warnings
+- **Calculation History** - Local storage of previous calculations with delete functionality
+- **Export to Excel** - Download calculation history as XLSX file (Safari-compatible)
 
 ### User Experience
 - **Bilingual Support** - Full English and Bulgarian language toggle (persisted in localStorage)
@@ -19,23 +21,31 @@ A modern web application for calculating building heat loss and evaluating energ
 - **Responsive Design** - Two-column layout for desktop, stacked for mobile
 - **PWA Ready** - Progressive Web App support for offline use
 
+### Admin Panel (Mentor Access)
+- **Materials Management** - Add, edit, and delete materials with custom thermal conductivity values
+- **Formula Settings** - Toggle absolute value for ΔT, edit component descriptions
+- **Temperature Limits** - Configure allowed ranges for internal/external temperatures
+- **Export/Import** - Backup and restore configuration as JSON
+- **Protected Access** - Password-protected mentor panel
+
 ### Input Validation
 | Parameter | Range | Notes |
 |-----------|-------|-------|
 | Internal Temperature | 10°C – 30°C | Comfort zone standards |
 | External Temperature | -30°C – +50°C | Bulgarian climate extremes |
-| Thickness | Material-specific max | See table below |
+| Area | 1 – 1000 m² | Max 2 decimal places |
+| Thickness | Material-specific max | Displayed as XX.00 format |
 | Decimal Places | Max 2 digits | e.g., 15.25 or 15,25 |
 
 ### Materials & Limits
 
 | Material | λ (W/m·K) | Max Thickness |
 |----------|-----------|---------------|
-| Concrete | 1.65 | 40 cm |
-| Brick | 0.79 | 40 cm |
-| Bitumen Insulation | 0.27 | 2 cm |
-| Wood | 0.13 | 15 cm |
-| Glass Wool | 0.04 | 15 cm |
+| Concrete | 1.65 | 40.00 cm |
+| Brick | 0.79 | 40.00 cm |
+| Bitumen Insulation | 0.27 | 2.00 cm |
+| Wood | 0.13 | 15.00 cm |
+| Glass Wool | 0.04 | 15.00 cm |
 
 ## 🛠️ Technology Stack
 
@@ -43,6 +53,7 @@ A modern web application for calculating building heat loss and evaluating energ
 - **Backend**: Node.js, Express.js
 - **Styling**: Custom CSS with CSS variables for theming
 - **Icons**: Bootstrap Icons
+- **Export**: SheetJS (xlsx) for Excel export
 - **Database**: Firebase Firestore (optional cloud sync)
 
 ## 🚀 Quick Start
