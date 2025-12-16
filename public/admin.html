@@ -47,6 +47,14 @@
                 <i class="bi bi-arrow-left"></i>
                 <span data-i18n="admin_back_to_calc">Back to Calculator</span>
             </a>
+
+            <!-- Language Switcher on Login Page -->
+            <div class="login-lang-switcher">
+                <div class="lang-switcher" id="loginLangSwitcher">
+                    <button class="lang-btn" id="loginLangBG" data-lang="bg">BG</button>
+                    <button class="lang-btn" id="loginLangEN" data-lang="en">EN</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -65,10 +73,10 @@
                     <button class="btn-theme-toggle" id="themeToggle">
                         <i class="bi bi-sun-fill"></i>
                     </button>
-                    <button class="btn-lang-toggle" id="langToggle">
-                        <i class="bi bi-globe2"></i>
-                        <span data-i18n="lang_toggle">EN / BG</span>
-                    </button>
+                    <div class="lang-switcher" id="langSwitcher">
+                        <button class="lang-btn" id="langBG" data-lang="bg">BG</button>
+                        <button class="lang-btn" id="langEN" data-lang="en">EN</button>
+                    </div>
                     <button class="btn-logout" id="logoutBtn">
                         <i class="bi bi-box-arrow-right"></i>
                     </button>
@@ -112,39 +120,75 @@
                             <div class="admin-card-header">
                                 <h4 data-i18n="admin_formula_title">Heat Loss Formula</h4>
                             </div>
+
+                            <!-- Formula Display -->
                             <div class="formula-display">
                                 <div class="formula-main">Q = U × A × ΔT</div>
-                                <div class="formula-expanded">Q = (λ / d) × A × |T<sub>in</sub> - T<sub>out</sub>|</div>
+                                <div class="formula-expanded" id="formulaExpanded">Q = (λ / d) × A × (T<sub>in</sub> -
+                                    T<sub>out</sub>)</div>
                             </div>
-                            <div class="formula-legend">
-                                <div class="formula-item">
-                                    <span class="formula-symbol">Q</span>
-                                    <span class="formula-desc" data-i18n="formula_q_desc">Heat loss (Watts)</span>
-                                </div>
-                                <div class="formula-item">
-                                    <span class="formula-symbol">U</span>
-                                    <span class="formula-desc" data-i18n="formula_u_desc">Thermal transmittance
-                                        (W/m²K)</span>
-                                </div>
-                                <div class="formula-item">
-                                    <span class="formula-symbol">λ</span>
-                                    <span class="formula-desc" data-i18n="formula_lambda_desc">Thermal conductivity
-                                        (W/mK)</span>
-                                </div>
-                                <div class="formula-item">
-                                    <span class="formula-symbol">d</span>
-                                    <span class="formula-desc" data-i18n="formula_d_desc">Material thickness (m)</span>
-                                </div>
-                                <div class="formula-item">
-                                    <span class="formula-symbol">A</span>
-                                    <span class="formula-desc" data-i18n="formula_a_desc">Wall area (m²)</span>
-                                </div>
-                                <div class="formula-item">
-                                    <span class="formula-symbol">ΔT</span>
-                                    <span class="formula-desc" data-i18n="formula_dt_desc">Temperature difference
-                                        (°C)</span>
+
+                            <!-- Formula Settings -->
+                            <div class="formula-settings">
+                                <h5 data-i18n="admin_formula_settings">Formula Settings</h5>
+
+                                <!-- Absolute Value Toggle -->
+                                <div class="formula-toggle-row">
+                                    <label class="toggle-label" for="useAbsoluteValue">
+                                        <span data-i18n="admin_use_absolute">Use absolute value for ΔT</span>
+                                        <small data-i18n="admin_absolute_hint">(|Tin - Tout| instead of Tin -
+                                            Tout)</small>
+                                    </label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="useAbsoluteValue">
+                                        <span class="toggle-slider"></span>
+                                    </label>
                                 </div>
                             </div>
+
+                            <!-- Editable Formula Legend -->
+                            <div class="formula-legend-editable">
+                                <h5 data-i18n="admin_formula_components">Formula Components</h5>
+                                <div class="formula-legend">
+                                    <div class="formula-item">
+                                        <span class="formula-symbol">Q</span>
+                                        <input type="text" class="formula-desc-input" id="descQ" data-key="q_desc"
+                                            value="Heat loss (Watts)">
+                                    </div>
+                                    <div class="formula-item">
+                                        <span class="formula-symbol">U</span>
+                                        <input type="text" class="formula-desc-input" id="descU" data-key="u_desc"
+                                            value="Thermal transmittance (W/m²K)">
+                                    </div>
+                                    <div class="formula-item">
+                                        <span class="formula-symbol">λ</span>
+                                        <input type="text" class="formula-desc-input" id="descLambda"
+                                            data-key="lambda_desc" value="Thermal conductivity (W/m·K)">
+                                    </div>
+                                    <div class="formula-item">
+                                        <span class="formula-symbol">d</span>
+                                        <input type="text" class="formula-desc-input" id="descD" data-key="d_desc"
+                                            value="Material thickness (m)">
+                                    </div>
+                                    <div class="formula-item">
+                                        <span class="formula-symbol">A</span>
+                                        <input type="text" class="formula-desc-input" id="descA" data-key="a_desc"
+                                            value="Wall area (m²)">
+                                    </div>
+                                    <div class="formula-item">
+                                        <span class="formula-symbol">ΔT</span>
+                                        <input type="text" class="formula-desc-input" id="descDeltaT" data-key="dt_desc"
+                                            value="Temperature difference (°C)">
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn-calculate" id="saveFormulaBtn"
+                                    style="margin-top: 1rem;">
+                                    <i class="bi bi-check-lg"></i>
+                                    <span data-i18n="admin_save_formula">Save Formula Settings</span>
+                                </button>
+                            </div>
+
                             <div class="formula-note">
                                 <i class="bi bi-info-circle"></i>
                                 <span data-i18n="formula_note">The formula is based on steady-state heat transfer
@@ -169,7 +213,12 @@
                                         <tr>
                                             <th data-i18n="admin_th_name_en">Name (EN)</th>
                                             <th data-i18n="admin_th_name_bg">Name (BG)</th>
-                                            <th data-i18n="admin_th_lambda">λ (W/mK)</th>
+                                            <th data-i18n="admin_th_lambda">
+                                                λ (W/m·K)
+                                                <span class="tooltip-badge" data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    title="Thermal conductivity of the material, measured in W/m·K. Indicates how easily heat flows through the material.">?</span>
+                                            </th>
                                             <th data-i18n="admin_th_max_thickness">Max Thickness (cm)</th>
                                             <th data-i18n="admin_th_actions">Actions</th>
                                         </tr>
@@ -332,7 +381,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label-custom" for="materialLambda" data-i18n="admin_th_lambda">Thermal
-                        Conductivity λ (W/mK)</label>
+                        Conductivity λ (W/m·K)</label>
                     <input type="number" step="0.001" min="0.001" class="form-control-custom" id="materialLambda"
                         required>
                 </div>
